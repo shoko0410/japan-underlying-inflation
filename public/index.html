@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Korean is inlined so the page reads without JavaScript; i18n.js swaps every
+     [data-i18n] node when another language is selected (?lang=ja or the toggle). -->
+<title>일본 기조적 물가 — 절사평균·가중중앙값·최빈값</title>
+<meta name="description" id="meta-desc" content="일본은행이 매달 내는 기조적 인플레 지표 모음. 절사평균·가중중앙값·최빈값과 상승·하락 품목 비율을 2001년부터 봅니다. 일본의 &quot;코어&quot;는 생선식품만 뺀 것이라 미국 Core와 다릅니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23bc002d'/%3E%3Cpath d='M5 22 L12 13 L18 18 L27 7' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <h1 data-i18n="h1">일본 기조적 물가</h1>
+      <p class="subtitle" data-i18n="subtitle">
+        일본은행 조사통계국이 매달 내는 <strong>기조적 인플레 지표</strong>입니다.
+        헤드라인에서 항목을 빼는 대신, 그 달 <strong>품목별 가격 변화의 분포를 통계로 요약</strong>합니다 —
+        <strong>절사평균</strong>은 양끝을 잘라낸 평균, <strong>가중중앙값</strong>은 한가운데 품목,
+        <strong>최빈값</strong>은 가장 흔한 변화율입니다.
+        분포에서 읽는 지표라 특정 품목의 급등락에 잘 흔들리지 않습니다.
+      </p>
+    </div>
+    <div class="masthead-actions">
+      <button class="icon-btn" id="lang-toggle" type="button">日本語</button>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-live="polite">🌙 다크</button>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-label">
+    <p class="hero-label" id="hero-label" data-i18n="heroLabel">절사평균 · 전년 대비</p>
+    <div class="hero-row">
+      <span class="hero-figure" id="hero-value">—</span>
+      <span class="delta" id="hero-delta"></span>
+      <span class="hero-meta" id="hero-meta"></span>
+    </div>
+  </section>
+
+  <section class="tiles" id="tiles" data-aria="tiles" aria-label="주요 지표 요약"></section>
+
+  <!-- One filter row, scoping every chart, stat and table below it. -->
+  <div class="filters" role="group" data-aria="filters" aria-label="기간 필터">
+    <span class="filter-label" data-i18n="filterLabel">기간</span>
+    <div class="seg" id="range-seg"></div>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <h2 data-i18n="yoyTitle">기조적 물가 — 전년 대비 (YoY)</h2>
+      <p class="card-sub" data-i18n="yoySub">
+        앞의 셋은 <strong>가격 변화의 분포에서 읽는</strong> 지표이고, 뒤의 셋은
+        <strong>바구니에서 항목을 빼는</strong> 방식입니다. 기본은 분포 지표 셋 + 일본 코어가
+        켜져 있고, 범례를 눌러 나머지를 켤 수 있습니다. 세로 회색 띠는 내각부가 사후에 확정한
+        경기후퇴 구간, 가로 기준선은 일본은행 목표 2%입니다.
+      </p>
+    </div>
+    <div class="legend" id="legend-yoy" role="group" data-aria="legendToggle" aria-label="계열 표시 전환"></div>
+    <div class="chart-host" id="chart-yoy" tabindex="0" role="img" data-aria="chartYoy"
+         aria-label="절사평균·가중중앙값·최빈값과 CPI 제외 계열의 전년 대비 상승률 추이 선그래프"></div>
+  </section>
+
+  <section class="card" id="card-breadth" hidden>
+    <div class="card-head">
+      <h2 data-i18n="breadthTitle">가격이 오른 품목은 얼마나 되나</h2>
+      <p class="card-sub" data-i18n="breadthSub">
+        전년 대비 가격이 <strong>오른 품목</strong>과 <strong>내린 품목</strong>의 비율입니다.
+        물가 상승이 몇몇 품목에 몰려 있는지 전방위로 퍼져 있는지를 보여줍니다 — 절사평균이 낮아도
+        상승 품목 비율이 높으면 압력이 넓게 남아 있다는 뜻입니다.
+        두 선의 <strong>간격이 곧 확산지수(상승－하락)</strong>라서 따로 그리지 않았습니다.
+        단위가 %포인트로 달라 같은 축에 얹으면 오해를 부르기도 하고요. 값은 타일과 표에 있습니다.
+      </p>
+    </div>
+    <div class="legend" id="legend-breadth" role="group" data-aria="legendToggle" aria-label="계열 표시 전환"></div>
+    <div class="chart-host" id="chart-breadth" tabindex="0" role="img" data-aria="chartBreadth"
+         aria-label="전년 대비 가격이 오른 품목과 내린 품목의 비율 추이 선그래프"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+      <div>
+        <h2 data-i18n="tableTitle">데이터 테이블</h2>
+        <p class="card-sub" data-i18n="tableSub">차트의 모든 값을 숫자로 확인할 수 있습니다. 최근 데이터가 위쪽입니다.</p>
+      </div>
+      <button class="icon-btn" id="table-toggle" type="button" aria-expanded="false" aria-controls="table-wrap">
+        표 열기
+      </button>
+    </div>
+    <div class="table-wrap" id="table-wrap" hidden></div>
+  </section>
+
+  <section class="notes">
+    <h2 data-i18n="notesTitle">읽을 때 주의할 점</h2>
+    <ul>
+      <li data-i18n="noteSpecial">
+        <strong>이 숫자들은 뉴스에 나오는 공식 CPI와 다릅니다.</strong> 일본은행이
+        <strong>"특수요인"을 제거한 자체 추계치</strong>이기 때문입니다. 소비세율 변경, 교육 무상화
+        (2026년 4월 급식 무상화 포함), 2021년 휴대폰 요금 인하, 여행 지원 사업, 전기·가스·휘발유
+        부담 경감책이 여기에 해당합니다. 정책이 만든 일회성 단차를 걷어내야 시계열이 비교 가능해지기
+        때문인데, 그만큼 총무성이 발표하는 공식 숫자와는 어긋납니다. 무엇을 특수요인으로 볼지도
+        바뀔 수 있습니다.
+      </li>
+      <li data-i18n="noteCore">
+        <strong>일본의 "코어"는 미국 Core와 다릅니다.</strong> 일본에서 「코어CPI」는
+        <strong>생선식품만</strong> 제외한 지수라 <strong>에너지가 그대로 들어 있습니다</strong>.
+        미국식 Core(식료품·에너지 제외)에 해당하는 건 한 겹 더 뺀 「<strong>코어코어</strong>」이고,
+        이 페이지에는 그보다도 넓게 뺀 <strong>식료품·에너지 제외</strong>까지 셋 다 있습니다.
+        한국의 근원물가(농산물·석유류 제외)와도 범위가 다르니, 나라별 숫자를 나란히 놓을 때는
+        이름이 아니라 <strong>무엇을 뺐는지</strong>를 맞춰야 합니다.
+      </li>
+      <li data-i18n="noteThree">
+        <strong>셋은 같은 분포를 다르게 요약한 값입니다.</strong> <strong>절사평균</strong>은
+        가격 변화 순으로 줄 세운 뒤 양끝을 잘라내고 남은 가운데를 평균하고,
+        <strong>가중중앙값</strong>은 지출 비중 기준 딱 한가운데 품목의 변화율이며,
+        <strong>최빈값</strong>은 가장 많은 품목이 몰려 있는 변화율입니다.
+        셋이 벌어질 때가 정보인데, 분포가 한쪽으로 길게 늘어졌다는 뜻이기 때문입니다 —
+        중앙값이 낮은데 절사평균이 높으면 소수 품목이 크게 올려 평균을 끌어올리고 있는 것입니다.
+      </li>
+      <li data-i18n="noteBase">
+        <strong>기준연도가 5년마다 바뀝니다.</strong> 일본 CPI는 5년 주기로 기준연도를 개정하고,
+        일본은행 파일은 기준별로 열을 나눠 싣습니다. 각 기준이 자기 5년 구간을 겹침 없이 덮고 있어
+        월마다 값이 있는 열을 그대로 이어붙였습니다. 전년비 "비율"이라 지수처럼 연결·재기준화할
+        필요가 없습니다. 다만 기준 개정 시점에는 품목 구성과 가중치가 바뀌므로, 그 경계를 넘는
+        비교는 조금 느슨하게 보시는 편이 좋습니다.
+      </li>
+      <li id="base-note"></li>
+      <li data-i18n="noteRecession">
+        <strong>경기후퇴 구간은 사후에 확정된 것입니다.</strong> 내각부 경기동향지수연구회가
+        정점·저점을 <strong>한참 지난 뒤에</strong> 확정합니다 — 2018년 10월 정점은 몇 년이 지나서야
+        정해졌습니다. 그래서 <strong>차트 오른쪽 끝에는 음영이 절대 나타날 수 없습니다.</strong>
+        지금 후퇴가 진행 중이더라도 아직 판정 전이라 표시되지 않습니다. 음영은 정점 다음 달부터
+        저점까지이며, 이 페이지가 담고 있는 구간은 2001년 이후 네 번입니다.
+      </li>
+      <li data-i18n="noteSource">
+        <strong>출처.</strong> 모든 계열이 일본은행 조사통계국의
+        <code>cpirev.xlsx</code> 한 파일에서 나옵니다 —
+        <a href="https://www.boj.or.jp/en/research/research_data/cpi/index.htm">기조적 인플레율 파악 지표</a>.
+        공식 CPI 발표 <strong>2영업일 뒤 오후 2시</strong>에 갱신됩니다. API 키가 필요 없고,
+        이 사이트도 매일 그 파일을 확인해 값이 바뀔 때만 갱신합니다.
+        경기후퇴 구간은 내각부 경기기준일자입니다.
+      </li>
+      <li id="generated-note"></li>
+    </ul>
+  </section>
+
+</div>
+
+<script src="i18n.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

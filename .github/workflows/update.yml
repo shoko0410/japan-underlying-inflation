@@ -1,0 +1,78 @@
+name: Update Japan inflation data & deploy
+
+on:
+  schedule:
+    # 06:40 UTC daily = 15:40 JST. The Bank of Japan posts the workbook at 2pm JST, two
+    # business days after the Statistics Bureau releases the CPI, so this lands well
+    # after it either way. Deliberately off the hour: jobs scheduled at :00 queue behind
+    # everyone else's and get delayed.
+    #
+    # Daily rather than "on release day" because the release date moves with the CPI
+    # calendar, revisions land off-cycle, and the CPI base year is rebased every five
+    # years. A run that finds nothing new writes byte-identical files and makes no commit.
+    - cron: '40 6 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write # committing refreshed data
+  pages: write
+  id-token: write
+
+# Never let two deployments race; let a running one finish rather than cancelling it
+# mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      # No dependencies to install — the fetch script is plain Node, including its
+      # xlsx reader, which is built on node:zlib.
+      #
+      # --strict fails the run rather than committing a build that lost a series. The
+      # BOJ workbook needs no key; ESTAT_APP_ID is optional, and strict only objects if
+      # it is set and stops working.
+      - name: Fetch the BOJ underlying-inflation workbook
+        env:
+          ESTAT_APP_ID: ${{ secrets.ESTAT_APP_ID }}
+        run: node scripts/fetch-data.mjs --fresh --strict
+
+      - name: Commit if the numbers changed
+        run: |
+          if git diff --quiet -- data/jpn.json public/data.js; then
+            echo "No change — the Bank of Japan published nothing new since the last run."
+            exit 0
+          fi
+          latest=$(node -p "require('./data/jpn.json').latestMonth")
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/jpn.json public/data.js
+          git commit -m "data: refresh through ${latest}"
+          git push
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
