@@ -119,15 +119,23 @@ function recessionBands(months) {
 // ---------------------------------------------------------------- e-Stat
 
 /**
- * Official CPI from the Statistics Bureau, for the two lines the BOJ workbook cannot
- * supply: the headline index and the published core, neither adjusted for institutional
- * factors. Table 0003427113 is the monthly nationwide CPI, and the two class codes below
- * pick 総合 and 生鮮食品を除く総合 as year-over-year percent changes.
+ * Official CPI from the Statistics Bureau, for the lines the BOJ workbook cannot supply:
+ * the published aggregates, with no institutional-factor adjustment. Those two views of
+ * the same concept are the point — in July 2026 the official core reads 1.8% while the
+ * Bank's adjusted version reads 2.3%, and the gap is the energy subsidies.
+ *
+ * The 2025-base table carries year-over-year values linked back to 1971, so unlike the
+ * BOJ workbook there is nothing to splice across base years here.
+ *
+ *   cdTab=3   前年同月比 (the other two are the index itself and month-on-month)
+ *   cdArea    00000 = 全国
+ *   cdCat01   0001 総合 · 0161 生鮮食品を除く総合 · 0178 生鮮食品及びエネルギーを除く総合
  */
-const ESTAT_TABLE = '0003427113';
+const ESTAT_TABLE = '0004052037'; // 消費者物価指数（2025年基準）
 const ESTAT_SERIES = {
-  headline: { name: '総合', cat: '0001' },
-  coreOfficial: { name: '生鮮食品を除く総合', cat: '0002' },
+  headline: '0001',
+  coreOfficial: '0161',
+  coreCoreOfficial: '0178',
 };
 
 async function fetchEstat(appId) {
@@ -137,36 +145,36 @@ async function fetchEstat(appId) {
         new URLSearchParams({
           appId,
           statsDataId: ESTAT_TABLE,
-          cdCat02: '1',           // year-over-year percent change
+          cdTab: '3',
+          cdArea: '00000',
+          cdCat01: Object.values(ESTAT_SERIES).join(','),
           metaGetFlg: 'N',
           cntGetFlg: 'N',
-          sectionHeaderFlg: '2',
         });
       const res = await fetch(url);
       const j = await res.json();
       const status = j?.GET_STATS_DATA?.RESULT?.STATUS;
       if (status !== 0) {
         const e = new Error(`e-Stat: ${j?.GET_STATS_DATA?.RESULT?.ERROR_MSG ?? 'unknown error'}`);
-        e.fatal = status === 100; // bad appId will never start working
+        e.fatal = status === 100; // a bad appId will never start working
         throw e;
       }
       return j;
     }));
 
   const values = json?.GET_STATS_DATA?.STATISTICAL_DATA?.DATA_INF?.VALUE ?? [];
+  const byCode = new Map(Object.entries(ESTAT_SERIES).map(([k, c]) => [c, k]));
   const out = {};
   for (const key of Object.keys(ESTAT_SERIES)) out[key] = new Map();
   for (const v of values) {
-    const t = String(v['@time'] ?? '');       // "2026000707" -> 2026-07
-    const m = t.match(/^(\d{4})\d{2}(\d{2})$/);
-    if (!m) continue;
+    // "2026000707" -> 2026-07. The same axis also carries annual and fiscal-year rows,
+    // which end in 00 and would otherwise land on a month that does not exist.
+    const m = String(v['@time'] ?? '').match(/^(\d{4})\d{4}(\d{2})$/);
+    if (!m || m[2] === '00') continue;
+    const key = byCode.get(String(v['@cat01'] ?? ''));
+    if (!key) continue;
     const num = Number(v.$);
-    if (!Number.isFinite(num)) continue;
-    for (const [key, def] of Object.entries(ESTAT_SERIES)) {
-      if (String(v['@cat01'] ?? '').endsWith(def.cat)) {
-        out[key].set(`${m[1]}-${m[2]}`, num);
-      }
-    }
+    if (Number.isFinite(num)) out[key].set(`${m[1]}-${m[2]}`, num);
   }
   return out;
 }

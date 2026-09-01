@@ -63,8 +63,11 @@ window.I18N = {
         '<strong>"특수요인"을 제거한 자체 추계치</strong>이기 때문입니다. 소비세율 변경, 교육 무상화 ' +
         '(2026년 4월 급식 무상화 포함), 2021년 휴대폰 요금 인하, 여행 지원 사업, 전기·가스·휘발유 ' +
         '부담 경감책이 여기에 해당합니다. 정책이 만든 일회성 단차를 걷어내야 시계열이 비교 가능해지기 ' +
-        '때문인데, 그만큼 총무성이 발표하는 공식 숫자와는 어긋납니다. 무엇을 특수요인으로 볼지도 ' +
-        '바뀔 수 있습니다.',
+        '때문인데, 그만큼 총무성이 발표하는 공식 숫자와는 어긋납니다. ' +
+        '<strong>차이가 얼마나 되는지는 직접 보실 수 있습니다</strong> — 범례에서 "(공식)"이 붙은 ' +
+        '세 계열을 켜면 총무성 발표치가 함께 그려집니다. 2026년 7월 기준 공식 코어는 1.8%인데 ' +
+        '특수요인을 제거한 일본은행 값은 2.3%입니다. 전기·가스·휘발유 부담 경감책이 공식 수치를 ' +
+        '0.5%p가량 눌러 놓고 있다는 뜻입니다. 무엇을 특수요인으로 볼지도 바뀔 수 있습니다.',
       noteCore:
         '<strong>일본의 "코어"는 미국 Core와 다릅니다.</strong> 일본에서 「코어CPI」는 ' +
         '<strong>생선식품만</strong> 제외한 지수라 <strong>에너지가 그대로 들어 있습니다</strong>. ' +
@@ -92,12 +95,12 @@ window.I18N = {
         '지금 후퇴가 진행 중이더라도 아직 판정 전이라 표시되지 않습니다. 음영은 정점 다음 달부터 ' +
         '저점까지이며, 이 페이지가 담고 있는 구간은 2001년 이후 네 번입니다.',
       noteSource:
-        '<strong>출처.</strong> 모든 계열이 일본은행 조사통계국의 ' +
-        '<code>cpirev.xlsx</code> 한 파일에서 나옵니다 — ' +
+        '<strong>출처.</strong> 주력 계열은 일본은행 조사통계국의 <code>cpirev.xlsx</code> ' +
+        '한 파일에서 나옵니다 — ' +
         '<a href="https://www.boj.or.jp/en/research/research_data/cpi/index.htm">기조적 인플레율 파악 지표</a>. ' +
-        '공식 CPI 발표 <strong>2영업일 뒤 오후 2시</strong>에 갱신됩니다. API 키가 필요 없고, ' +
-        '이 사이트도 매일 그 파일을 확인해 값이 바뀔 때만 갱신합니다. ' +
-        '경기후퇴 구간은 내각부 경기기준일자입니다.',
+        '공식 CPI 발표 <strong>2영업일 뒤 오후 2시</strong>에 갱신되고, 이 사이트도 매일 그 파일을 ' +
+        '확인해 값이 바뀔 때만 갱신합니다. "(공식)"이 붙은 세 계열만 총무성 통계를 e-Stat API ' +
+        '(2025년 기준 표, 전년동월비)에서 따로 받습니다. 경기후퇴 구간은 내각부 경기기준일자입니다.',
     },
 
     aria: {
@@ -136,6 +139,7 @@ window.I18N = {
         exFoodEnergy: '식료품·에너지 제외',
         headline: '총합 CPI (공식)',
         coreOfficial: '코어 CPI (공식)',
+        coreCoreOfficial: '코어코어 (공식)',
         shareRising: '상승 품목 비율',
         shareFalling: '하락 품목 비율',
         diffusion: '상승－하락',
@@ -157,7 +161,7 @@ window.I18N = {
         cols: {
           trimmedMean: '절사평균', weightedMedian: '가중중앙값', mode: '최빈값',
           exFresh: '코어', exFreshEnergy: '코어코어', exFoodEnergy: '식료품·에너지 제외',
-          headline: '총합(공식)', coreOfficial: '코어(공식)',
+          headline: '총합(공식)', coreOfficial: '코어(공식)', coreCoreOfficial: '코어코어(공식)',
           shareRising: '상승 품목', shareFalling: '하락 품목', diffusion: '상승－하락',
         },
         caption: (from, to) =>
@@ -223,6 +227,10 @@ window.I18N = {
         '（2026年4月からの給食費無償化を含む）、2021年の携帯電話通信料の引き下げ、旅行支援策、' +
         '電気・ガス・ガソリンの負担軽減策がこれにあたります。政策が生んだ一度きりの段差を取り除かないと' +
         '時系列が比較できなくなるためですが、その分だけ総務省の公表値とはずれます。' +
+        '<strong>どれだけずれるかは実際に見比べられます</strong> — 凡例で「（公表値）」の付いた' +
+        '3系列を表示すると、総務省の公表値が重ねて描かれます。2026年7月時点で公表コアは1.8%、' +
+        '特殊要因を除いた日本銀行の値は2.3%です。電気・ガス・ガソリンの負担軽減策が公表値を' +
+        '0.5%ポイントほど押し下げているということになります。' +
         '何を特殊要因とみなすかも変わりうる点にご注意ください。',
       noteCore:
         '<strong>日本の「コア」は米国のCoreとは違います。</strong>日本で「コアCPI」といえば' +
@@ -250,11 +258,12 @@ window.I18N = {
         '今まさに後退が進行中だとしても、まだ判定前なので表示されません。陰影は山の翌月から谷までで、' +
         'このページが含む区間は2001年以降の4回です。',
       noteSource:
-        '<strong>出典。</strong>すべての系列が日本銀行調査統計局の<code>cpirev.xlsx</code>' +
+        '<strong>出典。</strong>主要な系列は日本銀行調査統計局の<code>cpirev.xlsx</code>' +
         '1ファイルから来ています — ' +
         '<a href="https://www.boj.or.jp/research/research_data/cpi/index.htm">基調的なインフレ率を捕捉するための指標</a>。' +
-        '公表CPIの<strong>2営業日後の午後2時</strong>に更新されます。APIキーは不要で、' +
-        'このサイトも毎日そのファイルを確認し、値が変わったときだけ更新します。' +
+        '公表CPIの<strong>2営業日後の午後2時</strong>に更新され、このサイトも毎日そのファイルを' +
+        '確認し、値が変わったときだけ更新します。「（公表値）」の付いた3系列だけは総務省の統計を' +
+        'e-Stat API（2025年基準表、前年同月比）から別途取得しています。' +
         '景気後退期は内閣府の景気基準日付です。',
     },
 
@@ -294,6 +303,7 @@ window.I18N = {
         exFoodEnergy: '食料・エネルギー除く',
         headline: '総合CPI（公表値）',
         coreOfficial: 'コアCPI（公表値）',
+        coreCoreOfficial: 'コアコア（公表値）',
         shareRising: '上昇品目比率',
         shareFalling: '下落品目比率',
         diffusion: '上昇－下落',
@@ -315,7 +325,7 @@ window.I18N = {
         cols: {
           trimmedMean: '刈込平均値', weightedMedian: '加重中央値', mode: '最頻値',
           exFresh: 'コア', exFreshEnergy: 'コアコア', exFoodEnergy: '食料・エネ除く',
-          headline: '総合（公表）', coreOfficial: 'コア（公表）',
+          headline: '総合（公表）', coreOfficial: 'コア（公表）', coreCoreOfficial: 'コアコア（公表）',
           shareRising: '上昇品目', shareFalling: '下落品目', diffusion: '上昇－下落',
         },
         caption: (from, to) =>

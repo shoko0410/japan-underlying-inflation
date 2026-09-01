@@ -92,6 +92,7 @@
     { key: 'exFoodEnergy', varName: '--cat-6' },
     { key: 'headline', varName: '--cat-7' },
     { key: 'coreOfficial', varName: '--cat-8' },
+    { key: 'coreCoreOfficial', varName: '--cat-9' },
   ].filter((s) => has(s.key))
     .map((s) => ({ ...s, name: U.series[s.key], values: val(s.key) }));
 
@@ -117,7 +118,8 @@
     hidden: {
       // The exclusion-based aggregates start hidden: the point of the page is the three
       // measures the Bank reads off the distribution.
-      yoy: new Set(['exFreshEnergy', 'exFoodEnergy', 'headline', 'coreOfficial']),
+      yoy: new Set(['exFreshEnergy', 'exFoodEnergy', 'headline', 'coreOfficial',
+        'coreCoreOfficial']),
       breadth: new Set(),
     },
     tableOpen: false,
@@ -562,7 +564,8 @@
     const C = U.table.cols;
     const cols = [
       'trimmedMean', 'weightedMedian', 'mode', 'exFresh', 'exFreshEnergy', 'exFoodEnergy',
-      'headline', 'coreOfficial', 'shareRising', 'shareFalling', 'diffusion',
+      'headline', 'coreOfficial', 'coreCoreOfficial',
+      'shareRising', 'shareFalling', 'diffusion',
     ].filter(has).map((k) => ({ h: C[k], get: (i) => val(k)[i] }));
 
     const table = document.createElement('table');
